@@ -1,8 +1,4 @@
-<<<<<<< HEAD
 function [tau,sig_tau,medtau,ltau,utau,CItau] = StochasticExtinctionTime(Re,Gamma,I0,S0,CI, plotfig)
-=======
-function [tau,sig_tau,medtau,ltau,utau,CItau] = StochasticExtinctionTime(Re,Gamma,I0,CI, plotfig)
->>>>>>> 6589ae5ead2213f70678e44e6c32869f5bd2d043
 
 %function that returns the mean (tau), standard devation (sig_tau), median
 %(medtau) and confidence intervals (ltau, utau) as specified by 0<CI<1, for
@@ -54,13 +50,9 @@ else
     CItau = [];
 end
 
-<<<<<<< HEAD
 l=1;
 
 h = [];
-=======
-
->>>>>>> 6589ae5ead2213f70678e44e6c32869f5bd2d043
 if numel(Re)<=5 && plotfig==1
     
     figure; 
@@ -69,7 +61,6 @@ if numel(Re)<=5 && plotfig==1
         
         if numel(Re)==1
         
-<<<<<<< HEAD
             H=plotdist(rho(n),Re(n),tdagger(n),I0,Idagger(n),tau(n),medtau(n),ltau(n),utau(n),alpha,n,1); 
             
             
@@ -138,21 +129,6 @@ if numel(Re)<=5 && plotfig==1
                 
             end
                 
-=======
-            H(n)=plotdist(rho(n),tdagger(n),tau(n),medtau(n),ltau(n),utau(n),alpha,n,1);            
-            
-            legendstr{n}=['$\mathrm{Reproductive\ number}\ R_e = ',num2str(Re),...
-            ';\ \ \mathrm{infection\ duration}\ 1/\gamma = ',num2str(1/Gamma),...
-            '\ \mathrm{days};\quad \rho_e = ',num2str(round(100*rho,2)),'\ \mathrm{\%reduction/day}$'];
-        
-        else
-            
-            H(n)=plotdist(rho(n),tdagger(n),tau(n),medtau(n),ltau(n),utau(n),alpha,n,0);
-            
-            legendstr{n} = ['$\mathrm{Reproductive\ number}\ R_e = ',num2str(Re(n)),...
-            ';\ \ \mathrm{infection\ duration}\ 1/\gamma = ',num2str(1/Gamma),...
-            '\ \mathrm{days};\quad \rho_e = ',num2str(round(100*rho(n),2)),'\mathrm{\%\ reduction/day}$'];
->>>>>>> 6589ae5ead2213f70678e44e6c32869f5bd2d043
             
         end
         
@@ -165,7 +141,6 @@ if numel(Re)<=5 && plotfig==1
     xlabel 'Extinction time (days)'
     ylabel 'Probability density'
     
-<<<<<<< HEAD
     legend(h,legendstr)
     
     title(['Stochastic SIR model (constant $R_e$ assumption) --- $1/\gamma = ',...
@@ -176,12 +151,6 @@ if numel(Re)<=5 && plotfig==1
 elseif numel(Re)>5 && plotfig==1
         
     disp('Too many values of Re to plot pdf on one plot')
-=======
-    legend(H,legendstr)
-    
-    elseif numel(Re)>5 && plotfig==1
-            disp('Too many values of Re to plot pdf on one plot')
->>>>>>> 6589ae5ead2213f70678e44e6c32869f5bd2d043
             
     
 end
@@ -201,11 +170,7 @@ end
 
 
     
-<<<<<<< HEAD
 function h = plotdist(rho,Re,tdagger,I0,Idagger,tau,medtau,ltau,utau,alpha,n,addtext)
-=======
-function h = plotdist(rho,tdagger,tau,medtau,ltau,utau,alpha,n,addtext)
->>>>>>> 6589ae5ead2213f70678e44e6c32869f5bd2d043
 
 
 
@@ -216,7 +181,6 @@ function h = plotdist(rho,tdagger,tau,medtau,ltau,utau,alpha,n,addtext)
     p = rho*exp(-rho*(t-tdagger)).*exp(-exp(-rho*(t-tdagger)));
     
     h=plot(t,p,'-','Color',defcolours(n,:),'LineWidth',2);hold on
-<<<<<<< HEAD
     
     if I0/Idagger>25
         
@@ -310,44 +274,6 @@ else
     
 end
 
-=======
-        
-    
-    hfill=fill(t,p,defcolours(n,:));
-    set(hfill,'FaceAlpha',0.4)
-    
-%     u = axis;
-    
-    pp1 = interp1(t,p,tau);
-    line([tau, tau],[0 pp1],'Color','k','LineStyle','--','LineWidth',2)
-    
-    
-    pp2 = interp1(t,p,medtau);
-    line([medtau, medtau],[0 pp2],'Color','k','LineStyle','--','LineWidth',1)
-    
-    
-    pp3 = interp1(t,p,ltau);
-    line([ltau, ltau],[0 pp3],'Color','k','LineStyle','--','LineWidth',0.5)
-    
-    
-    pp4 = interp1(t,p,utau);
-    line([utau, utau],[0 pp4],'Color','k','LineStyle','--','LineWidth',0.5)
-    
-    if addtext==1
-      
-        text(tau,1.025*pp1,'Mean','HorizontalAlignment','left')
-        text(medtau,1.025*pp2,'Median','HorizontalAlignment','left')
-        text(0.99*ltau,1.025*pp3,[num2str(100*alpha),'th \%tile'],'HorizontalAlignment','right')
-        text(utau,1.2*pp4,[num2str(100*(1-alpha)),'th \%tile'],'HorizontalAlignment','left')
-    
-        
-        
-    
-    
-    
-    end
-    
->>>>>>> 6589ae5ead2213f70678e44e6c32869f5bd2d043
 
 end
 
