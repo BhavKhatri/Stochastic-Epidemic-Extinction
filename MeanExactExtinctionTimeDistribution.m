@@ -1,6 +1,6 @@
 function tau = MeanExactExtinctionTimeDistribution(Re,Gamma,I0)
 
-        [~,~,~,~,utau,~] = StochasticExtinctionTime(Re,Gamma,I0,[],0.95,0);
+        [~,~,~,~,utau,~] = StochasticExtinctionTime(Re,Gamma,I0,[],0.95,0,0);
         
         rho = Gamma*(1-Re);
         

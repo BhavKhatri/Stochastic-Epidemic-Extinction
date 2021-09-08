@@ -8,13 +8,13 @@ function [t,S,I,R]=Stochastic_SIR_ExtinctionSims(I0,Rec0,Re,Gamma,N)
 % Re the effective reproductive number (=β*S0/γ)
 
 
-%Simulations expect Re<=1
-if Re>1
-    disp('')
-    disp('Error: simulations require Re<=1')
-    
-    Re = input('Input value of Re<=1:');
-end
+% %Simulations expect Re<=1
+% if Re>1
+%     disp('')
+%     disp('Error: simulations require Re<=1')
+%     
+%     Re = input('Input value of Re<=1:');
+% end
 
 
 %Initial susceptible
@@ -41,6 +41,7 @@ r2 = rand(1,M);
 
 
 t(1)=0;
+tt=0;
 %Initial infected
 I(1)=I0; 
 
@@ -90,6 +91,14 @@ while I(k)~=0
     
     t(k+1) = t(k) + log(1/r2(k))/(w1+w2);
 
+    
+    if t(k+1)> tt
+        
+       disp(['t = ',num2str(t(k+1))])
+       
+    tt=tt+10;
+        
+    end
     
 %     disp(['t = ',num2str(t(k+1))])
 

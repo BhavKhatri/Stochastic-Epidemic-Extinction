@@ -1,8 +1,9 @@
-function PlotExtinctionTimesPredictions(Gamma,I0,S0,Re,CI,col)
+function PlotExtinctionTimesPredictions(Gamma,I0,S0,Re,N,Rec0,CI,col)
 
 
 if isempty(Re)
-    Re = [0:0.005:1-0.005];
+    Re = [0:0.005:1-0.00005];
+    
 end
 
 if isempty(col)
@@ -20,7 +21,7 @@ end
 
 
 %Calculate extinction times
-[tau,sig_tau,medtau,ltau,utau,~] = StochasticExtinctionTime(Re,Gamma,I0,S0,CI,0);
+[tau,sig_tau,medtau,ltau,utau,~] = StochasticExtinctionTime(Re,Gamma,I0,S0,CI,0,0);
 
 figure;
 
@@ -39,6 +40,58 @@ hmed = plot(Re,medtau,'--','Color',col);
 rho = Gamma*(1-Re);
 tau_det = 1./rho*log(I0);
 hdet = plot(Re,tau_det,'.','Color',col);
+
+
+
+%Re close to 1 correction
+x=0.95;
+% Restar = S0*log(x)/(Rec0+S0*x -N)
+
+
+
+
+% re = Restar:0.005:1;
+re = Re;
+r0 = N*re/S0;
+
+ReInf = -lambertw(-re.*exp(-r0.*(1-Rec0/N)));
+rhoeInf = Gamma*(1-ReInf);
+% Restar = ReInf(end)
+Restar = -lambertw(-exp(-N/S0.*(1-Rec0/N)))
+
+% if max(ReInf./Re)<x
+%     x= max(ReInf./Re)*1.05
+%     Restar = log(1/x)/(N/S0*(1-Rec0/N)-x)
+    
+    
+% Restar = 1-sqrt(I0/S0);
+
+[tau1,sig_tau1,medtau1,ltau1,utau1,~] = StochasticExtinctionTime(ReInf,Gamma,I0,S0,CI,0,0);
+% tau1
+
+   
+% indtau = re>=Restar;
+% indtau = rhoeInf<1./tau
+
+% tau1(indtau) = tau1(indtau)+1./rhoeInf(indtau);
+% ltau1(indtau) =ltau1(indtau)+1./rhoeInf(indtau);
+% utau1(indtau)  = utau1(indtau)+1./rhoeInf(indtau);
+
+
+sw=switchfunc(Re,Restar,0.05);
+
+Dtau = sw./rhoeInf;
+
+tau1 = tau1+Dtau;
+ltau1 =ltau1+Dtau;
+utau1  = utau1+Dtau;
+
+% tau1 = tau1+1./rhoeInf;
+% ltau1 =ltau1+1./rhoeInf;
+% utau1  = utau1+1./rhoeInf;
+
+
+hRe1 = plot(re,tau1,'-.','Color',col);
 
 %Critical Re corresponding to when I0 = 25*Idagger, where Idagger=1/(1-Re)
 %is the stochastic threshold
@@ -63,19 +116,24 @@ hexact = plot(Re,tau_exact,'k','LineWidth',1);
 
 %Plot vertical line to indicate value of Re that constant S(t)
 %approximation breaks down
-Restar = 1-sqrt(I0/S0);
+% Restar = 1-sqrt(I0/S0);
 hsmallRe = line([Restar, Restar],[0,ymax],'Color','k','LineStyle','--','LineWidth',1);
 
+
+
+
+
 %Legend
-h = [h1,hmed,h0, hexact,hdet,hnotexact,hsmallRe];
+h = [h1,hmed,h0, hexact,hdet,hRe1,hnotexact,hsmallRe];
 
 legendstr{1} = 'Mean (Gumbel)';
 legendstr{2} = 'Median (Gumbel)';
 legendstr{3} = '95\% CI (Gumbel)';
 legendstr{4} = 'Mean (Exact)';
 legendstr{5} = 'Deterministic';
-legendstr{6} = 'Region: $I_0\sim I^\dagger\ \Rightarrow$ Gumbel distribution not exact';
-legendstr{7} = 'Small $1-R_e$ threshold: When $1-R_e\sim < \sqrt{I_0/S_0}$ constant $R_e$ approximation poor';
+legendstr{6} = 'Mean Time Correction for $R_e>\sqrt{I_0/S_0}$';
+legendstr{7} = 'Region: $I_0\sim I^\dagger\ \Rightarrow$ Gumbel distribution not exact';
+legendstr{8} = 'Small $1-R_e$ threshold: When $1-R_e\sim < \sqrt{I_0/S_0}$ constant $R_e$ approximation poor';
     
 legend(h,legendstr,'Location','northwest');
 
@@ -94,8 +152,42 @@ xlabel('Effective Reproductive Number $R_e$')
 ylabel('Extinction Time (days)')
 
 
+ind1 =tau<=tau1;
+ind2 = tau>tau1;
+
+Tau = [tau(ind1),tau1(ind2)];
+sig_Tau  = [sig_tau(ind1),sig_tau1(ind2)];
+lTau = [ltau(ind1),ltau1(ind2)];
+uTau = [utau(ind1),utau1(ind2)];
+
+% sw=switchfunc(Re,Restar,0.05)
+% 
+% Tau = tau.*(1-sw) + tau1.*sw;
+% lTau = ltau.*(1-sw) + ltau1.*sw;
+% uTau = utau.*(1-sw) + utau1.*sw;
+
+figure;
+
+%Plot mean and confidence intervals
+[H0,H1]=plot_errorbound(Re,Tau,Tau-lTau,uTau-Tau,col,0);%hold on
+
+xlabel('Effective Reproductive Number $R_e$')
+ylabel('Extinction Time (days)')
+title(['Stochastic SIR model (no herd immunity) --- $1/\gamma = ',...
+        num2str(round(1/Gamma,3)),'\ \mathrm{days}; I_0 = ',num2strpow(I0),'; S_0 = ',num2strpow(S0),'$'])
+
+% indtau = find(abs(tau-tau1)<0.01);
+% RRestar = mean
+
+figure;plot(Re,ReInf)
 end
 
+
+function f=switchfunc(x,a,b)
+
+f=0.5 +0.5*tanh((x-a)/b);
+
+end
 
 
 

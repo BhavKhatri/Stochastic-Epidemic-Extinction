@@ -1,4 +1,4 @@
-function [tau,sig_tau,medtau,ltau,utau,CItau] = StochasticExtinctionTime(Re,Gamma,I0,S0,CI, plotfig)
+function [tau,sig_tau,medtau,ltau,utau,CItau] = StochasticExtinctionTime(Re,Gamma,I0,S0,CI, plotfig, Re1)
 
 %function that returns the mean (tau), standard devation (sig_tau), median
 %(medtau) and confidence intervals (ltau, utau) as specified by 0<CI<1, for
@@ -23,10 +23,19 @@ elseif Re<0
     return
 end
 
+if isempty(CI)
+    CI=0.95;
+end
+
 rho = Gamma*(1-Re);
 
 Idagger = 1./(1-Re);
-tdagger = 1./rho.*log(I0./Idagger);
+
+if Re1==1
+    tdagger = 1./rho.*(log(I0./Idagger)+1);
+else
+    tdagger = 1./rho.*log(I0./Idagger);
+end
 
 %Mean and standard deviation
 tau = double(eulergamma)./rho + tdagger;
